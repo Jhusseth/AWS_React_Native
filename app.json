@@ -1,0 +1,12 @@
+{
+  "name": "aws-project",
+  "displayName": "aws-project",
+  "expo": {
+    "name": "aws-project",
+    "slug": "aws-project",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
