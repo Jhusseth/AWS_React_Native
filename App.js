@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableHighlight, StyleSheet,ImageBackground} from 'react-native';
-import Registration from './components/auth/Registration';
+import Registration from './components/screens/Registration';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
-import Verification from './components/auth/Verification';
+import Verification from './components/screens/Verification';
 
 const image = { uri: "https://png.yourpng.com/uploads/preview/bird-vijay-mahar-cb-background-11592913381pahovbo22p.jpg" };
 
@@ -11,7 +11,7 @@ class HomeScreen extends React.Component {
    render() {
        return (
         <ImageBackground source={image} style={styles.image}>
-           <View style={[styles.titleText,{ flex: 1, alignItems: "center", justifyContent: "center",fontWeight: 'bold'}]}>
+           <View style={[styles.bgView,{ flex: 1, alignItems: "center", justifyContent: "center",fontWeight: 'bold'}]}>
              
                <Text style= {{fontSize: 30, color: "#FFF", marginBottom: 50, textAlign: "center", fontFamily: 'Karantina Cursive', fontFamily: 'Original Surfer Cursive'}}>Register and Check Birds</Text>
                
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
       resizeMode: "cover",
     },
 
-    titleText: {
+    bgView: {
       backgroundColor: "rgba(0,0,0,0.3)",
       padding:15
     },
@@ -76,7 +76,15 @@ const styles = StyleSheet.create({
       backgroundColor: 'rgba(186,215,12,1)',
       width: 200,
       marginTop: 5,
-      shadowColor:"gray"
+      shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+      },
+      shadowOpacity: 0.34,
+      shadowRadius: 6.27,
+
+      elevation: 5,
     },
    
     buttonText: {

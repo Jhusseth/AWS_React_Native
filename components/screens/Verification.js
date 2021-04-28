@@ -1,7 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight,ImageBackground } from 'react-native';
 import ImagePicker from "react-native-image-picker";
 import Amplify, {API} from "aws-amplify";
+
+const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64a5398e68005617.jpg" };
+
+
 Amplify.configure({
    API: {
        endpoints: [
@@ -77,22 +81,30 @@ class Verification extends Component {
            // alert(this.state.image)
        }
        return (
-           <View style={styles.MainContainer}>
-               <ScrollView>
-                   <Text style= {{ fontSize: 20, color: "#000", textAlign: 'center', marginBottom: 15, marginTop: 10 }}>Verify Face</Text>
-              
-                   {this.state.capturedImage !== "" && <View style={styles.imageholder} >
-                       <Image source={{uri : this.state.capturedImage}} style={styles.previewImage} />
-                   </View>}
-                    <TouchableHighlight style={[styles.buttonContainer, styles.captureButton]} onPress={this.captureImageButtonHandler}>
-                        <Text style={styles.buttonText}>Capture Image</Text>
-                    </TouchableHighlight>
+        <ImageBackground source={image} style={styles.image}>
+            <View style={styles.MainContainer}>
+                    <ScrollView style={{backgroundColor:"transparent", marginTop:60}}>
+                        
+                        <Text style= {{ fontSize: 30, color: "#000", textAlign: 'center', marginBottom: 35, marginTop: 30,fontWeight: 'bold'}}>Verify Bird</Text>
+                
+                        {this.state.capturedImage !== "" && <View style={styles.imageholder} >
+                        <Image source={{uri : this.state.capturedImage}} style={styles.previewImage} />
+                        </View>}
+                        <View style={styles.container}>
+                            <TouchableHighlight style={[styles.buttonContainer, styles.captureButton]} onPress={this.captureImageButtonHandler}>
+                                <Text style={styles.buttonText}>Capture Image</Text>
+                            </TouchableHighlight>
 
-                    <TouchableHighlight style={[styles.buttonContainer, styles.verifyButton]} onPress={this.verification}>
-                        <Text style={styles.buttonText}>Verify</Text>
-                    </TouchableHighlight>
-               </ScrollView>
-           </View>
+                            <TouchableHighlight style={[styles.buttonContainer, styles.verifyButton]} onPress={this.verification}>
+                                <Text style={styles.buttonText}>Verify</Text>
+                            </TouchableHighlight>
+                        </View>
+                        
+                    </ScrollView>
+                
+            </View>
+            </ImageBackground>
+           
        );
    }
 }
@@ -100,9 +112,19 @@ class Verification extends Component {
 const styles = StyleSheet.create({
     Maincontainer: {
         flex: 1,
-        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
+        padding:15
+    },
+    container:{
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop:50
+    },
+    image: {
+        flex: 1,
+        resizeMode: "cover",
     },
     buttonContainer: {
         height:45,
@@ -116,8 +138,17 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     },
     captureButton: {
-        backgroundColor: "#337ab7",
-        width: 350,
+        backgroundColor: "#148ccb",
+        width: 200,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
+
+        elevation: 10,
     },
     buttonText: {
         color: 'white',
@@ -125,8 +156,17 @@ const styles = StyleSheet.create({
     },
     verifyButton: {
         backgroundColor: "#C0C0C0",
-        width: 350,
+        width: 200,
         marginTop: 5,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
+
+        elevation: 10,
     },
     imageholder: {
         borderWidth: 1,
