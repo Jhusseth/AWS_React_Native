@@ -12,6 +12,10 @@ target 'awsproject' do
 
   if !ENV['CI']
     use_flipper!({ 'Flipper' => '0.80.0' })
+    pod 'RNGestureHandler', :path => '../node_modules/react-native-gesture-handler'
+
+    pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
+
     post_install do |installer|
       flipper_post_install(installer)
     end
