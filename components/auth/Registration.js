@@ -20,7 +20,8 @@ class Registration extends React.Component {
            username : '',
            capturedImage : ''
        };
-       // this.submitButtonHandler = this.submitButtonHandler.bind(this);
+       
+    //    this.submitButtonHandler = this.submitButtonHandler.bind(this);
     }
 
     captureImageButtonHandler = () => {
@@ -142,11 +143,11 @@ const styles = StyleSheet.create({
       color: 'white',
       fontWeight: 'bold',
     },
-    horizontal: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      padding: 10
-    },
+    // horizontal: {
+    //   flexDirection: 'row',
+    //   justifyContent: 'space-around',
+    //   padding: 10
+    // },
     submitButton: {
       backgroundColor: "#C0C0C0",
       width: 350,

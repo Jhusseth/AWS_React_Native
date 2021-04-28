@@ -84,14 +84,13 @@ class Verification extends Component {
                    {this.state.capturedImage !== "" && <View style={styles.imageholder} >
                        <Image source={{uri : this.state.capturedImage}} style={styles.previewImage} />
                    </View>}
+                    <TouchableHighlight style={[styles.buttonContainer, styles.captureButton]} onPress={this.captureImageButtonHandler}>
+                        <Text style={styles.buttonText}>Capture Image</Text>
+                    </TouchableHighlight>
 
-                   <TouchableHighlight style={[styles.buttonContainer, styles.captureButton]} onPress={this.captureImageButtonHandler}>
-                       <Text style={styles.buttonText}>Capture Image</Text>
-                   </TouchableHighlight>
-
-                   <TouchableHighlight style={[styles.buttonContainer, styles.verifyButton]} onPress={this.verification}>
-                       <Text style={styles.buttonText}>Verify</Text>
-                   </TouchableHighlight>
+                    <TouchableHighlight style={[styles.buttonContainer, styles.verifyButton]} onPress={this.verification}>
+                        <Text style={styles.buttonText}>Verify</Text>
+                    </TouchableHighlight>
                </ScrollView>
            </View>
        );
@@ -99,51 +98,51 @@ class Verification extends Component {
 }
 
 const styles = StyleSheet.create({
-   container: {
-     flex: 1,
-     backgroundColor: 'white',
-     alignItems: 'center',
-     justifyContent: 'center',
-   },
-   buttonContainer: {
-     height:45,
-     flexDirection: 'row',
-     alignItems: 'center',
-     justifyContent: 'center',
-     marginBottom:20,
-     width:"80%",
-     borderRadius:30,
-     marginTop: 20,
-     marginLeft: 5,
-   },
-   captureButton: {
-     backgroundColor: "#337ab7",
-     width: 350,
-   },
-   buttonText: {
-     color: 'white',
-     fontWeight: 'bold',
-   },
-   verifyButton: {
-     backgroundColor: "#C0C0C0",
-     width: 350,
-     marginTop: 5,
-   },
-   imageholder: {
-     borderWidth: 1,
-     borderColor: "grey",
-     backgroundColor: "#eee",
-     width: "50%",
-     height: 150,
-     marginTop: 10,
-     marginLeft: 90,
-     flexDirection: 'row',
-     alignItems:'center'
-   },
-   previewImage: {
-     width: "100%",
-     height: "100%",
-   }
+    Maincontainer: {
+        flex: 1,
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonContainer: {
+        height:45,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom:20,
+        width:"80%",
+        borderRadius:30,
+        marginTop: 20,
+        marginLeft: 5,
+    },
+    captureButton: {
+        backgroundColor: "#337ab7",
+        width: 350,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    verifyButton: {
+        backgroundColor: "#C0C0C0",
+        width: 350,
+        marginTop: 5,
+    },
+    imageholder: {
+        borderWidth: 1,
+        borderColor: "grey",
+        backgroundColor: "#eee",
+        width: "50%",
+        height: 150,
+        marginTop: 10,
+        marginLeft: 90,
+        flexDirection: 'row',
+        alignItems:'center'
+    },
+    previewImage: {
+        width: "100%",
+        height: "100%",
+    }
 });
 
 export default Verification;
