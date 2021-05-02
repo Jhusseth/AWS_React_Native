@@ -5,28 +5,58 @@ import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import Verification from './components/screens/Verification';
 
+import AppLoading from 'expo-app-loading';
+import * as Font from 'expo-font';
+
+
+let customFonts = {
+    'originalSurfer': require('./assets/fonts/OriginalSurfer-Regular.ttf'),
+};
+
 const image = { uri: "https://png.yourpng.com/uploads/preview/bird-vijay-mahar-cb-background-11592913381pahovbo22p.jpg" };
 
 class HomeScreen extends React.Component {
-   render() {
-       return (
-        <ImageBackground source={image} style={styles.image}>
-           <View style={[styles.bgView,{ flex: 1, alignItems: "center", justifyContent: "center",fontWeight: 'bold'}]}>
-             
-               <Text style= {{fontSize: 30, color: "#FFF", marginBottom: 50, textAlign: "center", fontFamily: 'Karantina Cursive', fontFamily: 'Original Surfer Cursive'}}>Register and Check Birds</Text>
-               
-               <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => this.props.navigation.navigate('Registration')}>
-                    <Text style={styles.buttonText}>Registration</Text>
-                  
-               </TouchableHighlight>
 
-               <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => this.props.navigation.navigate('Verification')}>
-                   <Text style={styles.buttonText}>Verification</Text>
-               </TouchableHighlight>
-              
-           </View>
-           </ImageBackground>
-       );
+    constructor(props){
+        super(props);
+        this.state =  { 
+            fontsLoaded: false, 
+        };
+    }
+    async _loadFontsAsync() {
+        await Font.loadAsync(customFonts);
+        this.setState({ fontsLoaded: true });
+    }
+
+    componentDidMount() {
+        this._loadFontsAsync();
+    }
+
+
+    render() {
+        if (this.state.fontsLoaded) {
+            return (
+                <ImageBackground source={image} style={styles.image}>
+                <View style={[styles.bgView,{ flex: 1, alignItems: "center", justifyContent: "center",fontWeight: 'bold'}]}>
+                    
+                    <Text style= {{fontSize: 30, color: "#FFF", marginBottom: 50, textAlign: "center", fontFamily: 'originalSurfer'}}>Register and Check Birds</Text>
+                    
+                    <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => this.props.navigation.navigate('Registration')}>
+                            <Text style={styles.buttonText}>Registration</Text>
+                        
+                    </TouchableHighlight>
+
+                    <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => this.props.navigation.navigate('Verification')}>
+                        <Text style={styles.buttonText}>Verification</Text>
+                    </TouchableHighlight>
+                    
+                </View>
+                </ImageBackground>
+            );
+        }
+        else {
+            return <AppLoading />;
+        }
    }
 }
 
