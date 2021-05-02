@@ -1,22 +1,24 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight, ImageBackground } from 'react-native';
-import ImagePicker from "react-native-image-picker";
+import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight, Platform,ImageBackground } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import Amplify, {API} from "aws-amplify";
+
+import * as Permissions from 'expo-permissions';
 
 const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64a5398e68005617.jpg" };
 
-Amplify.configure({
-   API: {
-       endpoints: [
-           {
-               name: "<API-name>",
-               endpoint: "<your endpoint url>"
-           }
-       ]
-   }
-});
+    Amplify.configure({
+    API: {
+        endpoints: [
+            {
+                name: "<API-name>",
+                endpoint: "<your endpoint url>"
+            }
+        ]
+    }
+    });
 
-class Registration extends React.Component {
+    class Registration extends React.Component {
     constructor(props){
        super(props);
        this.state =  {
@@ -27,23 +29,58 @@ class Registration extends React.Component {
     //    this.submitButtonHandler = this.submitButtonHandler.bind(this);
     }
 
-    captureImageButtonHandler = () => {
-        ImagePicker.showImagePicker({title: "Pick an Image", maxWidth: 800, maxHeight: 600}, (response) => {
-            console.log('Response = ', response);
-            // alert(response)
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            } else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            } else {
-                // You can also display the image using data:
-                const source = { uri: 'data:image/jpeg;base64,' + response.data };
-            
-                this.setState({capturedImage: response.uri, base64String: source.uri });
-            }
-        });
+
+
+    captureImageButtonHandler = async () => {
+        
+        const { status } = await Permissions.getAsync(Permissions.CAMERA);
+        if (status !== 'granted') {
+
+
+            (async () => {
+                if (Platform.OS !== 'web') {
+                  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                  if (status !== 'granted') {
+                    alert('Sorry, we need camera roll permissions to make this work!');
+                  }
+                }
+              })();
+
+              let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 1,
+              });
+          
+              console.log(result);
+          
+              if (!result.cancelled) {
+                const source = { uri: 'data:image/jpeg;base64,' + result.data };
+                this.setState({capturedImage: result.uri, base64String: source.uri });
+              }
+            // alert('Hey! You might want to enable notifications for my app, they are good.');
+        
+            // launchCamera({cameraType: "back", maxWidth: 800, maxHeight: 600}, (response) => {
+            //     console.log('Response = ', response);
+            //     // alert(response)
+            //     if (response.didCancel) {
+            //         console.log('User cancelled image picker');
+            //     } else if (response.error) {
+            //         console.log('ImagePicker Error: ', response.error);
+            //     } else if (response.customButton) {
+            //         console.log('User tapped custom button: ', response.customButton);
+            //     } else {
+            //         // You can also display the image using data:
+            //         const source = { uri: 'data:image/jpeg;base64,' + response.data };
+                
+            //         this.setState({capturedImage: response.uri, base64String: source.uri });
+            //     }
+            // });
+        }
+        else{
+
+        }
     }
 
     submitButtonHandler = () => {
