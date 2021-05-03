@@ -11,8 +11,8 @@ const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64
     API: {
         endpoints: [
             {
-                name: "<API-name>",
-                endpoint: "<your endpoint url>"
+                name: "grupo1-API",
+                endpoint: "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test/recognize/upload"
             }
         ]
     }
@@ -89,20 +89,19 @@ const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64
         } else if(this.state.capturedImage == '' || this.state.capturedImage == undefined || this.state.capturedImage == null) {
             alert("Please Capture the Image");
         } else {
-            const apiName = "<api-name>";
-            const path = "<your path>";
+            const apiName = "grupo1-API";
+            const path = "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test/recognize/upload";
             const init = {
-                headers : {
-                    'Accept': 'application/json',
-                    "X-Amz-Target": "RekognitionService.IndexFaces",
-                    "Content-Type": "application/x-amz-json-1.1"
-                },
+                // headers : {
+                //     'Accept': 'application/json',
+                //     "X-Amz-Target": "RekognitionService.IndexBirds",
+                //     "Content-Type": "application/x-amz-json-1.1"
+                // },
                 body : JSON.stringify({ 
                     Image: this.state.base64String,
                     name: this.state.username
                 })
             }
-            
             API.post(apiName, path, init).then(response => {
                 alert(response);
             });
@@ -121,7 +120,7 @@ const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64
                         <Text style= {{ fontSize: 30, color: "#000", textAlign: 'center', marginBottom: 35, marginTop: 10,fontWeight: 'bold' }}>Register Bird</Text>
                     
                         <TextInput
-                            placeholder="Enter Username"
+                            placeholder="BirdName"
                             onChangeText={UserName => this.setState({username: UserName})}
                             underlineColorAndroid='transparent'
                             style={styles.TextInputStyleClass}

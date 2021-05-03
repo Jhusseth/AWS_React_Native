@@ -12,8 +12,8 @@ Amplify.configure({
    API: {
        endpoints: [
            {
-               name: "<API-name>",
-               endpoint: "<your endpoint url>"
+               name: "AppAves",
+               endpoint: "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test/recognize/upload"
            }
        ]
    }
@@ -78,14 +78,14 @@ class Verification extends Component {
        if(this.state.capturedImage == '' || this.state.capturedImage == undefined || this.state.capturedImage == null) {
            alert("Please Capture the Image");
        } else {
-           const apiName = "<api-name>";
-           const path = "<your path>";
+           const apiName = "AppAves";
+           const path = "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test/recognize/upload";
           
            const init = {
                headers : {
                    'Accept': 'application/json',
-                   "X-Amz-Target": "RekognitionService.SearchFacesByImage",
-                   "Content-Type": "application/x-amz-json-1.1"
+                   "X-Amz-Target": "RekognitionService.SearchBirdsByImage",
+                   "Content-Type": "application/json"
                },
                body : JSON.stringify({
                    Image: this.state.base64String,
@@ -93,9 +93,9 @@ class Verification extends Component {
                })
            }
           
-           API.post(apiName, path, init).then(response => {
+            API.post(apiName ,path, init).then(response => {
                if(JSON.stringify(response.FaceMatches.length) > 0) {
-                   alert(response.FaceMatches[0].Face.ExternalImageId)
+                   alert(response.Labels[0].Name + "\n" +response.Labels[0].Confidence)
                } else {
                    alert("No matches found.")
                }
