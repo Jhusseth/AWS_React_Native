@@ -9,6 +9,19 @@ import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 
 
+import { withAuthenticator } from 'aws-amplify-react-native';
+
+
+import Amplify,{Auth} from 'aws-amplify';
+import config from './src/aws-exports';
+Amplify.configure({
+  ...config,
+  Analytics: {
+    disabled: true,
+  },
+});
+
+
 let customFonts = {
     'originalSurfer': require('./assets/fonts/OriginalSurfer-Regular.ttf'),
 };
@@ -32,6 +45,14 @@ class HomeScreen extends React.Component {
         this._loadFontsAsync();
     }
 
+    signOut = async () => {
+        try {
+          await Auth.signOut({ global: true });
+        } catch (error) {
+          console.log('error signing out: ', error);
+        }
+    };
+
 
     render() {
         if (this.state.fontsLoaded) {
@@ -48,6 +69,10 @@ class HomeScreen extends React.Component {
 
                     <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => this.props.navigation.navigate('Verification')}>
                         <Text style={styles.buttonText}>Verification</Text>
+                    </TouchableHighlight>
+
+                    <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => signOut()}>
+                        <Text style={styles.buttonText}>Salir</Text>
                     </TouchableHighlight>
                     
                 </View>
@@ -73,11 +98,19 @@ const MainNavigator = createStackNavigator(
 
 const AppContainer = createAppContainer(MainNavigator);
 
-export default class App extends Component {
-   render() {
-       return <AppContainer />;
-   }
+function App() {
+    return (
+    <AppContainer />
+    )
 }
+
+// export default class App extends Component {
+//    render() {
+//        return ;
+//    }
+// }
+
+export default withAuthenticator(App)
 
 const styles = StyleSheet.create({
     buttonContainer: {

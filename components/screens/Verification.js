@@ -1,22 +1,23 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight, Platform, ImageBackground } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Amplify, {API} from "aws-amplify";
-
-import * as Permissions from 'expo-permissions';
+import Amplify,{API,Auth} from "aws-amplify";
 
 const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64a5398e68005617.jpg" };
 
 
 Amplify.configure({
-   API: {
-       endpoints: [
-           {
-               name: "AppAves",
-               endpoint: "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test/recognize/upload"
-           }
-       ]
-   }
+    API: {
+      endpoints: [
+        {
+          name: "grupo1-API",
+          endpoint: "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test",
+          custom_header: async () => { 
+            return {Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`} 
+          }
+        }
+      ]
+    }
 });
 
 class Verification extends Component {
@@ -28,63 +29,42 @@ class Verification extends Component {
        };
    }
 
-   captureImageButtonHandler = async () => {
-        const { status } = await Permissions.getAsync(Permissions.CAMERA);
-        if (status !== 'granted') {
-
-            (async () => {
-                if (Platform.OS !== 'web') {
-                  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                  if (status !== 'granted') {
-                    alert('Sorry, we need camera roll permissions to make this work!');
-                  }
+    captureImageButtonHandler = async () => {
+        (async () => {
+            if (Platform.OS !== 'web') {
+                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
                 }
-            })();
-
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.All,
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-            });
-          
-            console.log(result);
-            
-            if (!result.cancelled) {
-                const source = { uri: 'data:image/jpeg;base64,' + result.data };
-                this.setState({capturedImage: result.uri, base64String: source.uri });
             }
+        })();
 
-    //    ImagePicker.showImagePicker({title: "Pick an Image", maxWidth: 800, maxHeight: 600}, (response) => {
-    //        console.log('Response = ', response);
-    //        // alert(response)
-    //        if (response.didCancel) {
-    //            console.log('User cancelled image picker');
-    //        } else if (response.error) {
-    //            console.log('ImagePicker Error: ', response.error);
-    //        } else if (response.customButton) {
-    //            console.log('User tapped custom button: ', response.customButton);
-    //        } else {
-    //            // You can also display the image using data:
-    //            const source = { uri: 'data:image/jpeg;base64,' + response.data };
-          
-    //            this.setState({capturedImage: response.uri, base64String: source.uri });
-    //        }
-    //    });
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+        
+        console.log(result);
+        
+        if (!result.cancelled) {
+            const source = { uri: 'data:image/jpeg;base64,' + result.data };
+            this.setState({capturedImage: result.uri, base64String: source.uri });
         }
-   }
+    }
 
-   verification = () => {
-       if(this.state.capturedImage == '' || this.state.capturedImage == undefined || this.state.capturedImage == null) {
+    verification = async () => {
+        if(this.state.capturedImage == '' || this.state.capturedImage == undefined || this.state.capturedImage == null) {
            alert("Please Capture the Image");
-       } else {
-           const apiName = "AppAves";
-           const path = "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test/recognize/upload";
+        } else {
+            const apiName = "grupo1-API";
+            const path = "/recognize/search";
           
            const init = {
                headers : {
                    'Accept': 'application/json',
-                   "X-Amz-Target": "RekognitionService.SearchBirdsByImage",
+                   "X-Amz-Target": "RekognitionService.DetectLabels",
                    "Content-Type": "application/json"
                },
                body : JSON.stringify({
@@ -93,12 +73,14 @@ class Verification extends Component {
                })
            }
           
-            API.post(apiName ,path, init).then(response => {
-               if(JSON.stringify(response.FaceMatches.length) > 0) {
-                   alert(response.Labels[0].Name + "\n" +response.Labels[0].Confidence)
-               } else {
-                   alert("No matches found.")
-               }
+            await API.post(apiName,path,init).then(response => {
+                alert(JSON.stringify(response))
+                console.log(response)
+            //    if(JSON.stringify(response.Labels.length) > 0) {
+            //        alert(response.Labels[0].Name + "\n" +response.Labels[0].Confidence)
+            //    } else {
+            //        alert("No matches found.")
+            //    }
            });
        }
    }
@@ -121,7 +103,7 @@ class Verification extends Component {
                         </View>}
                         <View style={styles.container}>
                             <TouchableHighlight style={[styles.buttonContainer, styles.captureButton]} onPress={this.captureImageButtonHandler}>
-                                <Text style={styles.buttonText}>Capture Image</Text>
+                                <Text style={styles.buttonText}>Upload Image</Text>
                             </TouchableHighlight>
 
                             <TouchableHighlight style={[styles.buttonContainer, styles.verifyButton]} onPress={this.verification}>
@@ -201,12 +183,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "grey",
         backgroundColor: "#eee",
-        width: "50%",
-        height: 150,
+        width: "80%",
+        height: 250,
         marginTop: 10,
-        marginLeft: 90,
+        marginLeft: 50,
         flexDirection: 'row',
-        alignItems:'center'
+        alignItems:'center',
+        justifyContent: 'center'
     },
     previewImage: {
         width: "100%",
