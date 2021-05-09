@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight, Platform, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableHighlight, Platform, ImageBackground } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Amplify,{API,Auth} from "aws-amplify";
 
@@ -10,8 +10,8 @@ Amplify.configure({
     API: {
       endpoints: [
         {
-          name: "grupo1-API",
-          endpoint: "https://yuby7jcakk.execute-api.us-east-1.amazonaws.com/test",
+          name: "API-G1-2021",
+          endpoint: "https://w75zpgs6w8.execute-api.us-east-1.amazonaws.com/recognize",
           custom_header: async () => { 
             return {Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`} 
           }
@@ -24,7 +24,7 @@ class Verification extends Component {
     constructor(props){
        super(props);
        this.state =  {
-           username: '',
+           username: 'verification',
            capturedImage : ''
        };
    }
@@ -44,12 +44,11 @@ class Verification extends Component {
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
+            base64:true,
         });
         
-        console.log(result);
-        
         if (!result.cancelled) {
-            const source = { uri: 'data:image/jpeg;base64,' + result.data };
+            const source = { uri: 'data:image/jpeg;base64,' + result.base64 };
             this.setState({capturedImage: result.uri, base64String: source.uri });
         }
     }
@@ -57,30 +56,27 @@ class Verification extends Component {
     verification = async () => {
         if(this.state.capturedImage == '' || this.state.capturedImage == undefined || this.state.capturedImage == null) {
            alert("Please Capture the Image");
-        } else {
-            const apiName = "grupo1-API";
-            const path = "/recognize/search";
+        } 
+        else {
+            const apiName = "API-G1-2021";
+            const path = "/search";
           
-           const init = {
-               headers : {
-                   'Accept': 'application/json',
-                   "X-Amz-Target": "RekognitionService.DetectLabels",
-                   "Content-Type": "application/json"
-               },
-               body : JSON.stringify({
-                   Image: this.state.base64String,
-                   name: this.state.username
-               })
-           }
+            const init = {
+                headers : {
+                    'Accept': 'application/json',
+                    "X-Amz-Target": "RekognitionService.DetectLabels",
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`
+                },
+                body : JSON.stringify({
+                    Image: this.state.base64String,
+                    name: this.state.username
+                })
+            }
           
             await API.post(apiName,path,init).then(response => {
                 alert(JSON.stringify(response))
                 console.log(response)
-            //    if(JSON.stringify(response.Labels.length) > 0) {
-            //        alert(response.Labels[0].Name + "\n" +response.Labels[0].Confidence)
-            //    } else {
-            //        alert("No matches found.")
-            //    }
            });
        }
    }
@@ -186,10 +182,20 @@ const styles = StyleSheet.create({
         width: "80%",
         height: 250,
         marginTop: 10,
-        marginLeft: 50,
+        marginLeft: 45,
         flexDirection: 'row',
         alignItems:'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+
+        shadowColor: "#000",
+        shadowOffset: {
+        width: 0,
+        height: 5,
+      },
+      shadowOpacity: 0.34,
+      shadowRadius: 6.27,
+
+      elevation: 5,
     },
     previewImage: {
         width: "100%",
