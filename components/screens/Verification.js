@@ -1,34 +1,25 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableHighlight, Platform, ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableHighlight, Platform, ImageBackground, ActivityIndicator,Alert, Modal,FlatList} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Amplify,{API,Auth} from "aws-amplify";
+import {API,Auth} from "aws-amplify";
 
 const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64a5398e68005617.jpg" };
 
-
-Amplify.configure({
-    API: {
-      endpoints: [
-        {
-          name: "API-G1-2021",
-          endpoint: "https://w75zpgs6w8.execute-api.us-east-1.amazonaws.com/recognize",
-          custom_header: async () => { 
-            return {Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`} 
-          }
-        }
-      ]
-    }
-});
 
 class Verification extends Component {
     constructor(props){
        super(props);
        this.state =  {
            username: 'verification',
-           capturedImage : ''
+           capturedImage : '',
+           charge: false,
+           modalVisible: false
        };
    }
 
+   setModalVisible = (visible) => {
+    this.setState({ modalVisible: visible });
+   }
     captureImageButtonHandler = async () => {
         (async () => {
             if (Platform.OS !== 'web') {
@@ -58,6 +49,9 @@ class Verification extends Component {
            alert("Please Capture the Image");
         } 
         else {
+
+            this.setState({charge:true})
+
             const apiName = "API-G1-2021";
             const path = "/search";
           
@@ -73,23 +67,51 @@ class Verification extends Component {
                     name: this.state.username
                 })
             }
-          
+          try{
             await API.post(apiName,path,init).then(response => {
-                alert(JSON.stringify(response))
-                console.log(response)
+                this.showData(response.Labels)
+                this.setState({charge:false})
            });
+        }
+        catch(err){
+            console.log(err)
+            this.setState({charge:false})
+        }
        }
-   }
+    }
 
+
+    showData = (data)=>{
+
+
+        var dataBirds = "Datos Encontrados:" + "\n" + "\n" + "\n"
+
+        data.map((item) =>{
+            dataBirds += "Tipo: " + item.Name + "\n" + "Precision: " + item.Confidence + "\n"
+            dataBirds += "----------------------------------------------------" + "\n"
+        })
+
+       alert(dataBirds)
+    }
   
   
     render() {
-       if(this.state.image!=="") {
-           // alert(this.state.image)
-       }
-       return (
-        <ImageBackground source={image} style={styles.image}>
-            <View style={styles.MainContainer}>
+        if(this.state.charge) {
+            return (
+                <ImageBackground source={image} style={styles.image}>
+                    <View style={styles.chargeLading}>
+                        <View style={styles.container}>
+                            <View style={styles.horizontal}>
+                                <ActivityIndicator size="large" color="#001eff" />
+                            </View>
+                        </View>
+                    </View>
+                </ImageBackground>
+            )
+        }
+        return (
+            <ImageBackground source={image} style={styles.image}>
+                <View style={styles.MainContainer}>
                     <ScrollView style={{backgroundColor:"transparent", marginTop:60}}>
                         
                         <Text style= {{ fontSize: 30, color: "#000", textAlign: 'center', marginBottom: 35, marginTop: 30,fontWeight: 'bold'}}>Verify Bird</Text>
@@ -108,11 +130,10 @@ class Verification extends Component {
                         </View>
                         
                     </ScrollView>
-                
-            </View>
+                    
+                </View>
             </ImageBackground>
-           
-       );
+        );
    }
 }
 
@@ -200,6 +221,26 @@ const styles = StyleSheet.create({
     previewImage: {
         width: "100%",
         height: "100%",
+    },
+    horizontal: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        padding: 10,
+       
+    },
+    chargeLading:{
+        backgroundColor: "rgba(0,0,0,0.5)",
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+        height: 5,
+      },
+      shadowOpacity: 0.34,
+      shadowRadius: 6.27,
+
+      elevation: 5,
     }
 });
 

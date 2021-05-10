@@ -14,11 +14,23 @@ import { withAuthenticator } from 'aws-amplify-react-native';
 
 import Amplify,{Auth} from 'aws-amplify';
 import config from './src/aws-exports';
+
 Amplify.configure({
-  ...config,
-  Analytics: {
-    disabled: true,
-  },
+    ...config,
+    Analytics: {
+        disabled: true,
+    },
+    API: {
+      endpoints: [
+        {
+          name: "API-G1-2021",
+          endpoint: "https://w75zpgs6w8.execute-api.us-east-1.amazonaws.com/recognize",
+          custom_header: async () => { 
+            return {Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`} 
+          }
+        }
+      ]
+    }
 });
 
 
@@ -35,6 +47,8 @@ class HomeScreen extends React.Component {
         this.state =  { 
             fontsLoaded: false, 
         };
+
+        this.signOut = this.signOut.bind(this);
     }
     async _loadFontsAsync() {
         await Font.loadAsync(customFonts);
@@ -71,7 +85,7 @@ class HomeScreen extends React.Component {
                         <Text style={styles.buttonText}>Verification</Text>
                     </TouchableHighlight>
 
-                    <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => signOut()}>
+                    <TouchableHighlight style={[styles.buttonContainer, styles.button]} activeOpacity={1} underlayColor="#6F8107" onPress={() => this.signOut()}>
                         <Text style={styles.buttonText}>Salir</Text>
                     </TouchableHighlight>
                     
@@ -104,11 +118,6 @@ function App() {
     )
 }
 
-// export default class App extends Component {
-//    render() {
-//        return ;
-//    }
-// }
 
 export default withAuthenticator(App)
 

@@ -20,6 +20,8 @@ target 'awsproject' do
 
     pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
 
+    pod 'RNSweetAlert', :path => '../node_modules/react-native-sweet-alert'
+
     post_install do |installer|
       flipper_post_install(installer)
     end

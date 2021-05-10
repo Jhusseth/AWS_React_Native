@@ -1,21 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight, Platform,ImageBackground } from 'react-native';
+import { StyleSheet, View, Text, TextInput, Image, ScrollView, TouchableHighlight, Platform,ImageBackground, ActivityIndicator} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Amplify,{API,Auth} from 'aws-amplify';
+import {API,Auth} from 'aws-amplify';
 
-Amplify.configure({
-    API: {
-      endpoints: [
-        {
-          name: "API-G1-2021",
-          endpoint: "https://w75zpgs6w8.execute-api.us-east-1.amazonaws.com/recognize",
-          custom_header: async () => { 
-            return {Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`} 
-          }
-        }
-      ]
-    }
-});
+
+
 
 const image = { uri: "https://i.pinimg.com/originals/e5/5f/61/e55f61ca0a88115f64a5398e68005617.jpg" };
 
@@ -24,7 +13,8 @@ class Registration extends React.Component {
        super(props);
        this.state =  {
            birdName : '',
-           capturedImage : ''
+           capturedImage : '',
+           charge: false
        };
        
     //    this.submitButtonHandler = this.submitButtonHandler.bind(this);
@@ -58,11 +48,15 @@ class Registration extends React.Component {
     }
 
     submitButtonHandler = async() => {
+
         if (this.state.birdName == '' || this.state.birdName == undefined || this.state.birdName == null) {
             alert("Please Enter the Birdname");
         } else if(this.state.capturedImage == '' || this.state.capturedImage == undefined || this.state.capturedImage == null) {
             alert("Please Capture the Image");
         } else {
+
+            this.setState({charge:true})
+
             const apiName = "API-G1-2021";
             const path = "/upload";
             
@@ -71,7 +65,7 @@ class Registration extends React.Component {
                     'Accept': 'application/json',
                     "Content-Type": "application/x-amz-json-1.1",
                     'Content-Encoding': 'gzip',
-                    "X-Amz-Target": "RekognitionService.DetectLabels",
+                    // "X-Amz-Target": "RekognitionService.DetectLabels",
                     Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`
                 },
                 body : JSON.stringify({ 
@@ -81,17 +75,28 @@ class Registration extends React.Component {
             }
             await API.post(apiName,path,init).then(response => {
                 alert(JSON.stringify(response))
-                console.log(response)
                 this.setState({capturedImage : ''})
                 this.setState({birdName : ''})
+                this.setState({charge:false})
             });
 
         }
     }
+
   
     render() {
-        if(this.state.image!=="") {
-            // alert(this.state.image)
+        if(this.state.charge) {
+            return (
+                <ImageBackground source={image} style={styles.image}>
+                    <View style={styles.chargeLading}>
+                        <View style={styles.container}>
+                            <View style={styles.horizontal}>
+                                <ActivityIndicator size="large" color="#001eff" />
+                            </View>
+                        </View>
+                    </View>
+                </ImageBackground>
+            )
         }
         return (
             <ImageBackground source={image} style={styles.image}>
@@ -121,8 +126,8 @@ class Registration extends React.Component {
                                 <Text style={styles.buttonText}>Submit</Text>
                             </TouchableHighlight>
                         </View>
-                    </ScrollView>
-                    
+                        
+                    </ScrollView>       
                 </View>
             </ImageBackground>
         );
@@ -232,6 +237,27 @@ const styles = StyleSheet.create({
     previewImage: {
       width: "100%",
       height: "100%",
+    },
+
+    horizontal: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        padding: 10,
+       
+    },
+    chargeLading:{
+        backgroundColor: "rgba(0,0,0,0.5)",
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+        height: 5,
+      },
+      shadowOpacity: 0.34,
+      shadowRadius: 6.27,
+
+      elevation: 5,
     }
 });
 
